@@ -3,6 +3,7 @@ package com.chailotl.particular.mixin;
 import com.chailotl.particular.Main;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.particle.Particle;
@@ -17,16 +18,37 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.awt.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Mixin(LeavesBlock.class)
 public class InjectLeavesBlock
 {
+	// Set of vanilla leaf blocks to skip
+	private static final Set<Block> VANILLA_LEAVES = new HashSet<Block>() {{
+		add(Blocks.OAK_LEAVES);
+		add(Blocks.BIRCH_LEAVES);
+		add(Blocks.SPRUCE_LEAVES);
+		add(Blocks.JUNGLE_LEAVES);
+		add(Blocks.ACACIA_LEAVES);
+		add(Blocks.DARK_OAK_LEAVES);
+		add(Blocks.AZALEA_LEAVES);
+		add(Blocks.FLOWERING_AZALEA_LEAVES);
+		add(Blocks.MANGROVE_LEAVES);
+		add(Blocks.CHERRY_LEAVES);
+		add(Blocks.PALE_OAK_LEAVES);
+	}};
+
 	@Inject(
 		method = "randomDisplayTick",
 		at = @At("HEAD"))
 	private void dropLeaves(BlockState state, World world, BlockPos pos, Random random, CallbackInfo ci)
 	{
 		if (!Main.CONFIG.fallingLeaves()) { return; }
+		
+		// Skip vanilla leaf blocks as they have their own particles in 1.21.5+
+		Block block = state.getBlock();
+		if (VANILLA_LEAVES.contains(block)) { return; }
 
 		if (random.nextInt(Main.CONFIG.fallingLeavesSettings.spawnChance()) == 0)
 		{
