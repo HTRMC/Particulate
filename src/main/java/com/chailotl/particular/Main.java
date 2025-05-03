@@ -54,16 +54,16 @@ public class Main implements ClientModInitializer
 	{
 		LOGGER.info("I am quite particular about the effects I choose to add :3");
 
-		// Populate leaves data
-		leavesData.put(Blocks.OAK_LEAVES, new LeafData(Particles.OAK_LEAF));
-		leavesData.put(Blocks.BIRCH_LEAVES, new LeafData(Particles.BIRCH_LEAF, new Color(FoliageColors.BIRCH)));
-		leavesData.put(Blocks.SPRUCE_LEAVES, new LeafData(Particles.SPRUCE_LEAF, new Color(FoliageColors.SPRUCE)));
-		leavesData.put(Blocks.JUNGLE_LEAVES, new LeafData(Particles.JUNGLE_LEAF));
-		leavesData.put(Blocks.ACACIA_LEAVES, new LeafData(Particles.ACACIA_LEAF));
-		leavesData.put(Blocks.DARK_OAK_LEAVES, new LeafData(Particles.DARK_OAK_LEAF));
-		leavesData.put(Blocks.AZALEA_LEAVES, new LeafData(Particles.AZALEA_LEAF, Color.white));
-		leavesData.put(Blocks.FLOWERING_AZALEA_LEAVES, new LeafData(Particles.AZALEA_LEAF, Color.white));
-		leavesData.put(Blocks.MANGROVE_LEAVES, new LeafData(Particles.MANGROVE_LEAF));
+		// Populate leaves data - vanilla blocks now have null particles as they're handled by vanilla
+		leavesData.put(Blocks.OAK_LEAVES, new LeafData(null));
+		leavesData.put(Blocks.BIRCH_LEAVES, new LeafData(null));
+		leavesData.put(Blocks.SPRUCE_LEAVES, new LeafData(null));
+		leavesData.put(Blocks.JUNGLE_LEAVES, new LeafData(null));
+		leavesData.put(Blocks.ACACIA_LEAVES, new LeafData(null));
+		leavesData.put(Blocks.DARK_OAK_LEAVES, new LeafData(null));
+		leavesData.put(Blocks.AZALEA_LEAVES, new LeafData(null));
+		leavesData.put(Blocks.FLOWERING_AZALEA_LEAVES, new LeafData(null));
+		leavesData.put(Blocks.MANGROVE_LEAVES, new LeafData(null));
 		leavesData.put(Blocks.CHERRY_LEAVES, new LeafData(null));
 		leavesData.put(Blocks.PALE_OAK_LEAVES, new LeafData(null));
 
