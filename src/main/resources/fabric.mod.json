@@ -1,6 +1,6 @@
 {
 	"schemaVersion": 1,
-	"id": "particular",
+	"id": "particulate",
 	"version": "${version}",
 	"name": "${name}",
 	"description": "Enhances Minecraft's ambience with hand-crafted visual effects like fireflies, falling leaves, and waterfall cascades",
@@ -8,9 +8,9 @@
 		"Chai"
 	],
 	"contact": {
-		"homepage": "https://modrinth.com/mod/particular/",
-		"sources": "https://github.com/chailotl/particular",
-		"issues": "https://github.com/chailotl/particular/issues"
+		"homepage": "https://modrinth.com/mod/particulate/",
+		"sources": "https://github.com/htrmc/particulate",
+		"issues": "https://github.com/htrmc/particulate/issues"
 	},
 	"custom": {
 		"modmenu": {
@@ -20,17 +20,17 @@
 		}
 	},
 	"license": "LGPL-3.0",
-	"icon": "assets/particular/icon.png",
+	"icon": "assets/particulate/icon.png",
 	"environment": "client",
 	"entrypoints": {
 		"client": [
-			"com.chailotl.particular.Main"
+          "com.dunnewortel.particulate.Main"
 		]
 	},
 	"mixins": [
-		"particular.mixins.json"
+		"particulate.mixins.json"
 	],
-	"accessWidener": "particular.accesswidener",
+	"accessWidener": "particulate.accesswidener",
 	"depends": {
 		"fabricloader": ">=0.15.11",
 		"minecraft": "~1.21.5",
