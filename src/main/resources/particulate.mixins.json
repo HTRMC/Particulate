@@ -26,7 +26,6 @@
     "InjectEnderChestBlock",
     "InjectEnderChestBlockEntity",
     "InjectEntity",
-    "InjectFlowableFluid",
     "InjectLeavesBlock",
     "InjectWaterBubbleParticle",
     "InjectWaterFluid",
