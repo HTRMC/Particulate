@@ -23,6 +23,11 @@ public class InjectWaterFluid
 		at = @At("TAIL"))
 	private void waterParticles(World world, BlockPos pos, FluidState state, Random random, CallbackInfo ci)
 	{
+		// Update cascades
+		if (Main.CONFIG.cascades()) {
+			Main.updateCascade(world, pos, state);
+		}
+		
 		if (!Main.CONFIG.waterfallSpray()) { return; }
 
 		if (!state.isStill() &&
