@@ -1,0 +1,18 @@
+{
+	"text.config.particulate.title": "Configuración de Particular",
+	"text.config.particulate.option.waterSplash": "Salpicaduras de agua",
+	"text.config.particulate.option.cascades": "Cascadas",
+	"text.config.particulate.option.waterfallSpray": "Rocío de cascada",
+	"text.config.particulate.option.fireflies": "Luciérnagas",
+	"text.config.particulate.option.fallingLeaves": "Hojas cayendo",
+	"text.config.particulate.option.caveDust": "Polvo de cuevas",
+	"text.config.particulate.option.excludeCaveDust": "Biomas excluidos de polvo de cuevas",
+	"text.config.particulate.option.chestBubbles": "Burbujas de cofres",
+	"text.config.particulate.option.soulSandBubbles": "Burbujas de cofres por arena de almas",
+	"text.config.particulate.option.barrelBubbles": "Burbujas de barriles",
+	"text.config.particulate.option.poppingBubbles": "Las burbujas estallan",
+	"text.config.particulate.option.rainRipples": "Ondas de lluvia",
+	"text.config.particulate.option.waterDripRipples": "Ondas de goteo en el agua",
+	"text.config.particulate.option.cakeEatingParticles": "Partículas al comer pastel",
+	"text.config.particulate.option.emissiveLavaDrips": "Gotas de lava emisivas"
+}
