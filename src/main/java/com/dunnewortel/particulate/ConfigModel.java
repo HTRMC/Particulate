@@ -1,7 +1,6 @@
 package com.dunnewortel.particulate;
 
 
-import com.dunnewortel.particulate.sushi_bar.owo.config.SushiModmenu;
 import io.wispforest.owo.config.annotation.*;
 import io.wispforest.owo.ui.core.Color;
 import net.minecraft.util.Identifier;
@@ -9,7 +8,6 @@ import net.minecraft.util.Identifier;
 import java.util.Arrays;
 import java.util.List;
 
-@SushiModmenu(modId = Main.MOD_ID)
 @Config(name = Main.MOD_ID, wrapperName = "ParticulateConfig")
 public class ConfigModel
 {
