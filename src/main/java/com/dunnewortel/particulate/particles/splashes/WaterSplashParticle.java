@@ -96,37 +96,64 @@ public class WaterSplashParticle extends BillboardParticle
 		int light = getBrightness(tickDelta);
 		int colorValue = colored ? this.color.getRGB() : Color.white.getRGB();
 
-		// Render 4 vertical sides to create 3D cylinder effect by submitting multiple quads
-		renderSide(submittable, vector3fs, 0, 1, height, l, m, n, o, light, colorValue, tickDelta);
-		renderSide(submittable, vector3fs, 1, 2, height, l, m, n, o, light, colorValue, tickDelta);
-		renderSide(submittable, vector3fs, 2, 3, height, l, m, n, o, light, colorValue, tickDelta);
-		renderSide(submittable, vector3fs, 3, 0, height, l, m, n, o, light, colorValue, tickDelta);
+		// Render 4 vertical sides to create 3D cylinder effect
+		// Each side needs 2 quads (front and back faces)
+		renderSide(submittable, vector3fs, 0, 1, height, l, m, n, o, light, colorValue);
+		renderSide(submittable, vector3fs, 1, 2, height, l, m, n, o, light, colorValue);
+		renderSide(submittable, vector3fs, 2, 3, height, l, m, n, o, light, colorValue);
+		renderSide(submittable, vector3fs, 3, 0, height, l, m, n, o, light, colorValue);
 	}
 
-	private void renderSide(BillboardParticleSubmittable submittable, Vector3f[] vector3fs, int a, int b, float height, float minU, float maxU, float minV, float maxV, int light, int color, float tickDelta)
+	private void renderSide(BillboardParticleSubmittable submittable, Vector3f[] vector3fs, int a, int b, float height, float minU, float maxU, float minV, float maxV, int light, int color)
 	{
-		// Calculate center position and dimensions for this vertical side
-		float centerX = (vector3fs[a].x() + vector3fs[b].x()) / 2.0f;
-		float centerY = (vector3fs[a].y() + vector3fs[b].y()) / 2.0f + height / 2.0f;
-		float centerZ = (vector3fs[a].z() + vector3fs[b].z()) / 2.0f;
-
-		// Calculate the angle to rotate this side to face outward
+		// Calculate direction vector for this side
 		float dx = vector3fs[b].x() - vector3fs[a].x();
 		float dz = vector3fs[b].z() - vector3fs[a].z();
-		float yRotation = (float)Math.atan2(dz, dx) + (float)Math.PI / 2.0f;
-
-		// Create quaternion for vertical orientation
-		org.joml.Quaternionf rotation = new org.joml.Quaternionf().rotateY(yRotation);
-
-		// Calculate width of this side
 		float sideWidth = (float)Math.sqrt(dx * dx + dz * dz);
 
-		// Submit this side as a quad (scale represents half-size)
-		submittable.render(getRenderType(), centerX, centerY, centerZ,
-			rotation.x, rotation.y, rotation.z, rotation.w,
-			Math.max(sideWidth, height) / 2.0f,
-			minU, maxU, minV, maxV,
-			color, light);
+		// Calculate angle - the quad should be aligned with the edge direction to form box walls
+		float angle = (float)Math.atan2(dz, dx);
+
+		// Create quaternion for a vertical quad aligned with the edge
+		// Rotate around Y axis to align with the edge direction (not perpendicular)
+		org.joml.Quaternionf rotation = new org.joml.Quaternionf()
+			.rotateY(angle);  // Align with the edge direction
+
+		org.joml.Quaternionf backRotation = new org.joml.Quaternionf()
+			.rotateY(angle + (float)Math.PI);  // Opposite side (180 degrees)
+
+		// Since BillboardParticleSubmittable only supports square quads (single size parameter),
+		// we need to render multiple quads to create the rectangular vertical side.
+		// Render quads with width matching sideWidth, stacked to reach full height
+		int numQuads = Math.max(1, (int)Math.ceil(height / sideWidth));
+		float quadHeight = height / numQuads;
+
+		for (int i = 0; i < numQuads; i++)
+		{
+			float yOffset = (i + 0.5f) * quadHeight;
+			float centerX = (vector3fs[a].x() + vector3fs[b].x()) / 2.0f;
+			float centerY = (vector3fs[a].y() + vector3fs[b].y()) / 2.0f + yOffset;
+			float centerZ = (vector3fs[a].z() + vector3fs[b].z()) / 2.0f;
+
+			// Calculate UV coordinates for this segment
+			float vRange = maxV - minV;
+			float segmentMinV = minV + (vRange * i / numQuads);
+			float segmentMaxV = minV + (vRange * (i + 1) / numQuads);
+
+			// Render front face
+			submittable.render(getRenderType(), centerX, centerY, centerZ,
+				rotation.x, rotation.y, rotation.z, rotation.w,
+				sideWidth / 2.0f,  // Use sideWidth for consistent quad sizing
+				minU, maxU, segmentMinV, segmentMaxV,
+				color, light);
+
+			// Render back face
+			submittable.render(getRenderType(), centerX, centerY, centerZ,
+				backRotation.x, backRotation.y, backRotation.z, backRotation.w,
+				sideWidth / 2.0f,
+				minU, maxU, segmentMinV, segmentMaxV,
+				color, light);
+		}
 	}
 
 	@Environment(EnvType.CLIENT)
