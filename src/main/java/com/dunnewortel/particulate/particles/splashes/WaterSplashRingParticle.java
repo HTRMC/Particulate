@@ -14,24 +14,24 @@ import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
-public class WaterSplashRingParticle extends SpriteBillboardParticle
+public class WaterSplashRingParticle extends BillboardParticle
 {
 	protected final SpriteProvider provider;
 	private final float width;
 
 	WaterSplashRingParticle(ClientWorld clientWorld, double x, double y, double z, float width, SpriteProvider provider)
 	{
-		super(clientWorld, x, y, z);
+		super(clientWorld, x, y, z, provider.getSprite(clientWorld.getRandom()));
 		gravityStrength = 0;
 		maxAge = 18;
 		this.width = width;
 		this.provider = provider;
-		setSpriteForAge(provider);
+		updateSprite(provider);
 	}
 
-	public ParticleTextureSheet getType()
+	public RenderType getRenderType()
 	{
-		return ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT;
+		return RenderType.PARTICLE_ATLAS_TRANSLUCENT;
 	}
 
 	@Override
@@ -39,7 +39,7 @@ public class WaterSplashRingParticle extends SpriteBillboardParticle
 	{
 		super.tick();
 
-		setSpriteForAge(provider);
+		updateSprite(provider);
 
 		if (!world.getFluidState(BlockPos.ofFloored(x, y, z)).isIn(FluidTags.WATER))
 		{
@@ -47,7 +47,6 @@ public class WaterSplashRingParticle extends SpriteBillboardParticle
 		}
 	}
 
-	@Override
 	public void render(VertexConsumer vertexConsumer, Camera camera, float tickDelta)
 	{
 		Vec3d vec3d = camera.getPos();
@@ -90,7 +89,7 @@ public class WaterSplashRingParticle extends SpriteBillboardParticle
 
 		@Nullable
 		@Override
-		public Particle createParticle(SimpleParticleType SimpleParticleType, ClientWorld clientWorld, double x, double y, double z, double g, double h, double i)
+		public Particle createParticle(SimpleParticleType SimpleParticleType, ClientWorld clientWorld, double x, double y, double z, double g, double h, double i, net.minecraft.util.math.random.Random random)
 		{
 			return new WaterSplashRingParticle(clientWorld, x, y, z, (float) g, provider);
 		}

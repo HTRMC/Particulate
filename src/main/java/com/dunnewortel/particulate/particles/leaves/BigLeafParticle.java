@@ -31,7 +31,7 @@ public class BigLeafParticle extends LeafParticle
 
 		@Nullable
 		@Override
-		public Particle createParticle(SimpleParticleType parameters, ClientWorld world, double x, double y, double z, double velX, double velY, double velZ)
+		public Particle createParticle(SimpleParticleType parameters, ClientWorld world, double x, double y, double z, double velX, double velY, double velZ, net.minecraft.util.math.random.Random random)
 		{
 			return new BigLeafParticle(world, x, y, z, velX, velY, velZ, provider);
 		}

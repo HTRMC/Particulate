@@ -2,6 +2,7 @@ package com.dunnewortel.particulate.mixin;
 
 import com.dunnewortel.particulate.Main;
 import com.dunnewortel.particulate.Particles;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.projectile.ArrowEntity;
@@ -30,13 +31,7 @@ public abstract class InjectEntity
 	@Shadow private Vec3d velocity;
 	@Shadow private EntityDimensions dimensions;
 	@Shadow @Final protected Random random;
-	@Shadow public abstract double getX();
-	@Shadow public abstract double getY();
-	@Shadow public abstract double getZ();
-
-	@Shadow public abstract World getWorld();
-	@Shadow public abstract Vec3d getPos();
-	@Shadow public abstract BlockPos getBlockPos();
+	@Shadow private World world;
 
 	@Unique
 	public Queue<Double> velocities = new LinkedList<>();
@@ -64,16 +59,18 @@ public abstract class InjectEntity
 		if (!Main.CONFIG.waterSplash()) { return; }
 
 		//noinspection ConstantConditions
-		if ((Object) this instanceof ArrowEntity || !getWorld().isClient) { return; }
+		if ((Object) this instanceof ArrowEntity || !(world instanceof ClientWorld)) { return; }
+
+		Entity entity = (Entity)(Object)this;
 
 		// Find water height
-		float baseY = MathHelper.floor(getY());
+		float baseY = MathHelper.floor(entity.getY());
 
 		boolean foundSurface = false;
 		FluidState prevState = Fluids.EMPTY.getDefaultState();
 		for (int i = 0; i < 5; ++i)
 		{
-			FluidState nextState = getWorld().getFluidState(getBlockPos().add(0, i, 0));
+			FluidState nextState = world.getFluidState(entity.getBlockPos().add(0, i, 0));
 			if (prevState.isOf(Fluids.WATER) && nextState.isOf(Fluids.EMPTY))
 			{
 				baseY += i - 1;
@@ -88,6 +85,6 @@ public abstract class InjectEntity
 
 		// 3D splash
 		double maxVelocity = velocities.isEmpty() ? 0.0 : Collections.max(velocities);
-		getWorld().addParticleClient(Particles.WATER_SPLASH_EMITTER, getX(), baseY + prevState.getHeight(), getZ(), dimensions.width(), maxVelocity, 0.0);
+		world.addParticleClient(Particles.WATER_SPLASH_EMITTER, entity.getX(), baseY + prevState.getHeight(), entity.getZ(), dimensions.width(), maxVelocity, 0.0);
 	}
 }

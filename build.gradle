@@ -88,26 +88,3 @@ publishing {
 		// retrieving dependencies.
 	}
 }
-if (providers.gradleProperty("modrinth_token").getOrNull() != null) {
-	publishMods {
-		File changelogFile = new File("CHANGELOG.md")
-
-		file = remapJar.archiveFile
-		changelog = changelogFile.exists() ? changelogFile.text : ""
-		type = STABLE
-		displayName = "${project.mod_name} ${project.mod_version}"
-		modLoaders.add("fabric")
-
-		modrinth {
-			accessToken = providers.gradleProperty("modrinth_token").get()
-			projectId = "B1CcCd9h"
-			minecraftVersionRange {
-				start = "1.20"
-				end = "1.20.4"
-			}
-			requires("fabric-api")
-			requires("owo-lib")
-			optional("modmenu")
-		}
-}
-}

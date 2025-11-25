@@ -18,12 +18,14 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-public class LeafParticle extends SpriteBillboardParticle
+public class LeafParticle extends BillboardParticle
 {
 	protected static final int fadeInDuration = 10;
 	protected static final int rampUpDuration = 20;
 	protected static final int fadeOutDuration = 100;
 
+	protected float angle;
+	protected float lastAngle;
 	protected float rotateFactor;
 	protected float gravityFactor = 0.075f;
 	protected final boolean flippedSprite;
@@ -32,8 +34,8 @@ public class LeafParticle extends SpriteBillboardParticle
 
 	protected LeafParticle(ClientWorld world, double x, double y, double z, double r, double g, double b, SpriteProvider provider)
 	{
-		super(world, x, y, z, r, g, b);
-		setSprite(provider);
+		super(world, x, y, z, provider.getSprite(world.getRandom()));
+		setSprite(provider.getSprite(world.getRandom()));
 
 		collidesWithWorld = true;
 		gravityStrength = 0;
@@ -52,6 +54,8 @@ public class LeafParticle extends SpriteBillboardParticle
 		flippedDirection = random.nextBoolean() ? 1 : -1;
 
 		scale = 7f / 32f;
+		angle = 0;
+		lastAngle = 0;
 	}
 
 	protected float clamp(float value, float min, float max)
@@ -125,12 +129,11 @@ public class LeafParticle extends SpriteBillboardParticle
 	}
 
 	@Override
-	public ParticleTextureSheet getType()
+	public RenderType getRenderType()
 	{
-		return ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT;
+		return RenderType.PARTICLE_ATLAS_TRANSLUCENT;
 	}
 
-	@Override
 	public void render(VertexConsumer vertexConsumer, Camera camera, float tickDelta)
 	{
 		Vec3d vec3d = camera.getPos();
@@ -222,7 +225,7 @@ public class LeafParticle extends SpriteBillboardParticle
 
 		@Nullable
 		@Override
-		public Particle createParticle(SimpleParticleType parameters, ClientWorld world, double x, double y, double z, double velX, double velY, double velZ)
+		public Particle createParticle(SimpleParticleType parameters, ClientWorld world, double x, double y, double z, double velX, double velY, double velZ, net.minecraft.util.math.random.Random random)
 		{
 			return new LeafParticle(world, x, y, z, velX, velY, velZ, provider);
 		}

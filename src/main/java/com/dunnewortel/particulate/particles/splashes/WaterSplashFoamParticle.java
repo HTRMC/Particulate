@@ -29,7 +29,7 @@ public class WaterSplashFoamParticle extends WaterSplashParticle
 
 		@Nullable
 		@Override
-		public Particle createParticle(SimpleParticleType SimpleParticleType, ClientWorld clientWorld, double x, double y, double z, double g, double h, double i)
+		public Particle createParticle(SimpleParticleType SimpleParticleType, ClientWorld clientWorld, double x, double y, double z, double g, double h, double i, net.minecraft.util.math.random.Random random)
 		{
 			return new WaterSplashFoamParticle(clientWorld, x, y, z, (float) g, (float) h, provider);
 		}

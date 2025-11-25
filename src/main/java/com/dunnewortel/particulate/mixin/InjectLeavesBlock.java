@@ -6,6 +6,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.particle.BillboardParticle;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.util.math.BlockPos;
@@ -67,9 +68,9 @@ public class InjectLeavesBlock
 				Color color = leafData.getColor(world, pos);
 
 				Particle leaf = MinecraftClient.getInstance().particleManager.addParticle(particle, x, y, z, 0, 0, 0);
-				if (leaf != null)
+				if (leaf instanceof BillboardParticle billboardLeaf)
 				{
-					leaf.setColor(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f);
+					billboardLeaf.setColor(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f);
 				}
 			}
 		}

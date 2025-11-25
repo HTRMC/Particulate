@@ -7,6 +7,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.particle.*;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.SimpleParticleType;
+import net.minecraft.util.math.random.Random;
 
 import java.awt.*;
 
@@ -46,9 +47,10 @@ public class CaveDustParticle extends AscendingParticle
 		}
 	}
 
-	public ParticleTextureSheet getType()
+	@Override
+	public BillboardParticle.RenderType getRenderType()
 	{
-		return ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT;
+		return BillboardParticle.RenderType.PARTICLE_ATLAS_TRANSLUCENT;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -61,7 +63,7 @@ public class CaveDustParticle extends AscendingParticle
 			this.provider = provider;
 		}
 
-		public Particle createParticle(SimpleParticleType SimpleParticleType, ClientWorld clientWorld, double x, double y, double z, double velX, double velY, double velZ)
+		public Particle createParticle(SimpleParticleType SimpleParticleType, ClientWorld clientWorld, double x, double y, double z, double velX, double velY, double velZ, Random random)
 		{
 			return new CaveDustParticle(clientWorld, x, y, z, 0, 0, 0, 1.0F, provider);
 		}

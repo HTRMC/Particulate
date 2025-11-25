@@ -11,9 +11,10 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.noise.SimplexNoiseSampler;
+import net.minecraft.util.math.random.Random;
 import org.spongepowered.asm.mixin.Unique;
 
-public class FireflyParticle extends SpriteBillboardParticle
+public class FireflyParticle extends BillboardParticle
 {
 	private static final int minOffTime = 20 * 2;
 	private static final int maxOffTime = 20 * 4;
@@ -27,8 +28,8 @@ public class FireflyParticle extends SpriteBillboardParticle
 
 	protected FireflyParticle(ClientWorld world, double x, double y, double z, SpriteProvider provider)
 	{
-		super(world, x, y, z);
-		setSprite(provider);
+		super(world, x, y, z, provider.getSprite(world.getRandom()));
+		setSprite(provider.getSprite(world.getRandom()));
 
 		gravityStrength = 0;
 		velocityX = 0;
@@ -109,9 +110,9 @@ public class FireflyParticle extends SpriteBillboardParticle
 	}
 
 	@Override
-	public ParticleTextureSheet getType()
+	protected RenderType getRenderType()
 	{
-		return ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT;
+		return RenderType.PARTICLE_ATLAS_TRANSLUCENT;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -125,7 +126,7 @@ public class FireflyParticle extends SpriteBillboardParticle
 		}
 
 		@Override
-		public Particle createParticle(SimpleParticleType parameters, ClientWorld world, double x, double y, double z, double velX, double velY, double velZ)
+		public Particle createParticle(SimpleParticleType parameters, ClientWorld world, double x, double y, double z, double velX, double velY, double velZ, Random random)
 		{
 			return new FireflyParticle(world, x, y, z, provider);
 		}

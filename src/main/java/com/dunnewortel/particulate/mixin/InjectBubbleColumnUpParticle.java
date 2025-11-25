@@ -2,9 +2,9 @@ package com.dunnewortel.particulate.mixin;
 
 import com.dunnewortel.particulate.Main;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.particle.BillboardParticle;
 import net.minecraft.client.particle.BubbleColumnUpParticle;
 import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.ParticleTypes;
 import org.spongepowered.asm.mixin.Mixin;
@@ -13,11 +13,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(BubbleColumnUpParticle.class)
-public abstract class InjectBubbleColumnUpParticle extends SpriteBillboardParticle
+public abstract class InjectBubbleColumnUpParticle extends BillboardParticle
 {
 	protected InjectBubbleColumnUpParticle(ClientWorld clientWorld, double d, double e, double f)
 	{
-		super(clientWorld, d, e, f);
+		super(clientWorld, d, e, f, null);
 	}
 
 	@Inject(

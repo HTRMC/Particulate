@@ -6,18 +6,17 @@ import com.dunnewortel.particulate.mixin.AccessorBillboardParticle;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.particle.BubbleColumnUpParticle;
-import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.ParticleFactory;
-import net.minecraft.client.particle.SpriteProvider;
+import net.minecraft.client.particle.*;
+import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.SimpleParticleType;
+import net.minecraft.util.math.random.Random;
 
 public class EnderBubbleParticle extends BubbleColumnUpParticle
 {
-	protected EnderBubbleParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i)
+	protected EnderBubbleParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, Sprite sprite)
 	{
-		super(clientWorld, d, e, f, g, h, i);
+		super(clientWorld, d, e, f, g, h, i, sprite);
 	}
 
 	@Override
@@ -47,10 +46,11 @@ public class EnderBubbleParticle extends BubbleColumnUpParticle
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(SimpleParticleType SimpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i)
+		public Particle createParticle(SimpleParticleType SimpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, Random random)
 		{
-			EnderBubbleParticle enderBubbleParticle = new EnderBubbleParticle(clientWorld, d, e, f, g, h, i);
-			enderBubbleParticle.setSprite(this.spriteProvider);
+			Sprite sprite = this.spriteProvider.getSprite(random);
+			EnderBubbleParticle enderBubbleParticle = new EnderBubbleParticle(clientWorld, d, e, f, g, h, i, sprite);
+			enderBubbleParticle.setSprite(sprite);
 			return enderBubbleParticle;
 		}
 	}

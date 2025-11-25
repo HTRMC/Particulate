@@ -2,11 +2,14 @@ package com.dunnewortel.particulate.particles.splashes;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.particle.*;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.registry.tag.FluidTags;
@@ -18,7 +21,7 @@ import org.joml.Vector3f;
 
 import java.awt.*;
 
-public class WaterSplashParticle extends SpriteBillboardParticle
+public class WaterSplashParticle extends BillboardParticle
 {
 	protected final SpriteProvider provider;
 	private final float width;
@@ -29,21 +32,28 @@ public class WaterSplashParticle extends SpriteBillboardParticle
 
 	WaterSplashParticle(ClientWorld clientWorld, double x, double y, double z, float width, float height, SpriteProvider provider)
 	{
-		super(clientWorld, x, y, z);
+		super(clientWorld, x, y, z, provider.getSprite(clientWorld.getRandom()));
 		gravityStrength = 0;
 		maxAge = 18;
 		this.width = width;
 		this.height = height;
 		this.provider = provider;
-		setSpriteForAge(provider);
+		updateSprite(provider);
 
 		color = new Color(BiomeColors.getWaterColor(clientWorld, BlockPos.ofFloored(x, y, z)));
-		unit = 2f / MinecraftClient.getInstance().particleManager.particleAtlasTexture.getWidth();
+		unit = 0.002f; // UV offset to prevent texture bleeding (equivalent to 2 pixels on a 1024-wide texture) // TODO: FIX HARD CODED VALUE
 	}
 
-	public ParticleTextureSheet getType()
+	@Override
+	public ParticleTextureSheet textureSheet()
 	{
-		return ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT;
+		return ParticleTextureSheet.SINGLE_QUADS;
+	}
+
+	@Override
+	public RenderType getRenderType()
+	{
+		return RenderType.PARTICLE_ATLAS_TRANSLUCENT;
 	}
 
 	@Override
@@ -51,7 +61,7 @@ public class WaterSplashParticle extends SpriteBillboardParticle
 	{
 		super.tick();
 
-		setSpriteForAge(provider);
+		updateSprite(provider);
 
 		if (!world.getFluidState(BlockPos.ofFloored(x, y, z)).isIn(FluidTags.WATER))
 		{
@@ -60,7 +70,7 @@ public class WaterSplashParticle extends SpriteBillboardParticle
 	}
 
 	@Override
-	public void render(VertexConsumer vertexConsumer, Camera camera, float tickDelta)
+	public void render(BillboardParticleSubmittable submittable, Camera camera, float tickDelta)
 	{
 		Vec3d vec3d = camera.getPos();
 		float f = (float)(MathHelper.lerp(tickDelta, lastX, x) - vec3d.getX());
@@ -84,23 +94,39 @@ public class WaterSplashParticle extends SpriteBillboardParticle
 		float n = getMinV();
 		float o = getMaxV();
 		int light = getBrightness(tickDelta);
-		int color = colored ? this.color.getRGB() : Color.white.getRGB();
-		renderSide(vertexConsumer, vector3fs, 0, 1, height, l, m, n, o, light, color);
-		renderSide(vertexConsumer, vector3fs, 1, 2, height, l, m, n, o, light, color);
-		renderSide(vertexConsumer, vector3fs, 2, 3, height, l, m, n, o, light, color);
-		renderSide(vertexConsumer, vector3fs, 3, 0, height, l, m, n, o, light, color);
-	}
-	private void renderSide(VertexConsumer vertexConsumer, Vector3f[] vector3fs, int a, int b, float height, float l, float m, float n, float o, int light, int color)
-	{
-		vertexConsumer.vertex(vector3fs[a].x(), vector3fs[a].y(), vector3fs[a].z()).texture(l, o).color(color).light(light);
-		vertexConsumer.vertex(vector3fs[b].x(), vector3fs[b].y(), vector3fs[b].z()).texture(m, o).color(color).light(light);
-		vertexConsumer.vertex(vector3fs[b].x(), vector3fs[b].y() + height, vector3fs[b].z()).texture(m, n).color(color).light(light);
-		vertexConsumer.vertex(vector3fs[a].x(), vector3fs[a].y() + height, vector3fs[a].z()).texture(l, n).color(color).light(light);
+		int colorValue = colored ? this.color.getRGB() : Color.white.getRGB();
 
-		vertexConsumer.vertex(vector3fs[b].x(), vector3fs[b].y(), vector3fs[b].z()).texture(m, o).color(color).light(light);
-		vertexConsumer.vertex(vector3fs[a].x(), vector3fs[a].y(), vector3fs[a].z()).texture(l, o).color(color).light(light);
-		vertexConsumer.vertex(vector3fs[a].x(), vector3fs[a].y() + height, vector3fs[a].z()).texture(l, n).color(color).light(light);
-		vertexConsumer.vertex(vector3fs[b].x(), vector3fs[b].y() + height, vector3fs[b].z()).texture(m, n).color(color).light(light);
+		// Render 4 vertical sides to create 3D cylinder effect by submitting multiple quads
+		renderSide(submittable, vector3fs, 0, 1, height, l, m, n, o, light, colorValue, tickDelta);
+		renderSide(submittable, vector3fs, 1, 2, height, l, m, n, o, light, colorValue, tickDelta);
+		renderSide(submittable, vector3fs, 2, 3, height, l, m, n, o, light, colorValue, tickDelta);
+		renderSide(submittable, vector3fs, 3, 0, height, l, m, n, o, light, colorValue, tickDelta);
+	}
+
+	private void renderSide(BillboardParticleSubmittable submittable, Vector3f[] vector3fs, int a, int b, float height, float minU, float maxU, float minV, float maxV, int light, int color, float tickDelta)
+	{
+		// Calculate center position and dimensions for this vertical side
+		float centerX = (vector3fs[a].x() + vector3fs[b].x()) / 2.0f;
+		float centerY = (vector3fs[a].y() + vector3fs[b].y()) / 2.0f + height / 2.0f;
+		float centerZ = (vector3fs[a].z() + vector3fs[b].z()) / 2.0f;
+
+		// Calculate the angle to rotate this side to face outward
+		float dx = vector3fs[b].x() - vector3fs[a].x();
+		float dz = vector3fs[b].z() - vector3fs[a].z();
+		float yRotation = (float)Math.atan2(dz, dx) + (float)Math.PI / 2.0f;
+
+		// Create quaternion for vertical orientation
+		org.joml.Quaternionf rotation = new org.joml.Quaternionf().rotateY(yRotation);
+
+		// Calculate width of this side
+		float sideWidth = (float)Math.sqrt(dx * dx + dz * dz);
+
+		// Submit this side as a quad (scale represents half-size)
+		submittable.render(getRenderType(), centerX, centerY, centerZ,
+			rotation.x, rotation.y, rotation.z, rotation.w,
+			Math.max(sideWidth, height) / 2.0f,
+			minU, maxU, minV, maxV,
+			color, light);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -115,7 +141,7 @@ public class WaterSplashParticle extends SpriteBillboardParticle
 
 		@Nullable
 		@Override
-		public Particle createParticle(SimpleParticleType SimpleParticleType, ClientWorld clientWorld, double x, double y, double z, double g, double h, double i)
+		public Particle createParticle(SimpleParticleType SimpleParticleType, ClientWorld clientWorld, double x, double y, double z, double g, double h, double i, net.minecraft.util.math.random.Random random)
 		{
 			return new WaterSplashParticle(clientWorld, x, y, z, (float) g, (float) h, provider);
 		}

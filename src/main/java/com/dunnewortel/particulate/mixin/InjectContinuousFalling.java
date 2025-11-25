@@ -2,8 +2,8 @@ package com.dunnewortel.particulate.mixin;
 
 import com.dunnewortel.particulate.Main;
 import com.dunnewortel.particulate.Particles;
+import net.minecraft.client.particle.BillboardParticle;
 import net.minecraft.client.particle.BlockLeakParticle;
-import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.particle.ParticleEffect;
@@ -18,13 +18,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(BlockLeakParticle.ContinuousFalling.class)
-public abstract class InjectContinuousFalling extends SpriteBillboardParticle
+public abstract class InjectContinuousFalling extends BillboardParticle
 {
 	@Shadow @Final protected ParticleEffect nextParticle;
 
 	protected InjectContinuousFalling(ClientWorld clientWorld, double d, double e, double f)
 	{
-		super(clientWorld, d, e, f);
+		super(clientWorld, d, e, f, null);
 	}
 
 	@Inject(

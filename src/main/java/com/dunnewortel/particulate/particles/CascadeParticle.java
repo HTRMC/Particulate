@@ -7,20 +7,21 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.Random;
 
-public class CascadeParticle extends SpriteBillboardParticle
+public class CascadeParticle extends BillboardParticle
 {
 	protected final SpriteProvider provider;
 
 	protected CascadeParticle(ClientWorld clientWorld, double x, double y, double z, SpriteProvider provider)
 	{
-		super(clientWorld, x, y, z);
+		super(clientWorld, x, y, z, provider.getSprite(clientWorld.getRandom()));
 		this.provider = provider;
 		maxAge = 9;
 		scale = 1f;
 		gravityStrength = 0.4f;
 		setVelocity(random.nextDouble() * 0.25f - 0.125f, 0, random.nextDouble() * 0.25f - 0.125f);
-		setSpriteForAge(provider);
+		updateSprite(provider);
 		removeIfInsideSolidBlock();
 	}
 
@@ -31,7 +32,7 @@ public class CascadeParticle extends SpriteBillboardParticle
 
 		removeIfInsideSolidBlock();
 
-		setSpriteForAge(provider);
+		updateSprite(provider);
 	}
 
 	private void removeIfInsideSolidBlock()
@@ -45,9 +46,9 @@ public class CascadeParticle extends SpriteBillboardParticle
 	}
 
 	@Override
-	public ParticleTextureSheet getType()
+	protected RenderType getRenderType()
 	{
-		return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
+		return RenderType.PARTICLE_ATLAS_OPAQUE;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -61,7 +62,7 @@ public class CascadeParticle extends SpriteBillboardParticle
 		}
 
 		@Override
-		public Particle createParticle(SimpleParticleType parameters, ClientWorld world, double x, double y, double z, double velX, double velY, double velZ)
+		public Particle createParticle(SimpleParticleType parameters, ClientWorld world, double x, double y, double z, double velX, double velY, double velZ, Random random)
 		{
 			return new CascadeParticle(world, x, y, z, provider);
 		}

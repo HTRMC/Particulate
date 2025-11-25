@@ -3,23 +3,22 @@ package com.dunnewortel.particulate.particles;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.color.world.BiomeColors;
-import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.ParticleFactory;
-import net.minecraft.client.particle.RainSplashParticle;
-import net.minecraft.client.particle.SpriteProvider;
+import net.minecraft.client.particle.*;
+import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
 
 import java.awt.*;
 
 public class WaterfallSprayParticle extends RainSplashParticle
 {
-	protected WaterfallSprayParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i)
+	protected WaterfallSprayParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, Sprite sprite)
 	{
-		super(clientWorld, d, e, f);
+		super(clientWorld, d, e, f, sprite);
 
 		velocityX += g;
 		velocityY *= 0.75f;
@@ -87,10 +86,11 @@ public class WaterfallSprayParticle extends RainSplashParticle
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(SimpleParticleType SimpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i)
+		public Particle createParticle(SimpleParticleType SimpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, Random random)
 		{
-			WaterfallSprayParticle waterfallSprayParticle = new WaterfallSprayParticle(clientWorld, d, e, f, g, h, i);
-			waterfallSprayParticle.setSprite(this.spriteProvider);
+			Sprite sprite = this.spriteProvider.getSprite(random);
+			WaterfallSprayParticle waterfallSprayParticle = new WaterfallSprayParticle(clientWorld, d, e, f, g, h, i, sprite);
+			waterfallSprayParticle.setSprite(sprite);
 			return waterfallSprayParticle;
 		}
 	}

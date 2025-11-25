@@ -2,8 +2,8 @@ package com.dunnewortel.particulate.mixin;
 
 import com.dunnewortel.particulate.Main;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.particle.BillboardParticle;
 import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.particle.WaterBubbleParticle;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.ParticleTypes;
@@ -13,11 +13,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(WaterBubbleParticle.class)
-public abstract class InjectWaterBubbleParticle extends SpriteBillboardParticle
+public abstract class InjectWaterBubbleParticle extends BillboardParticle
 {
 	protected InjectWaterBubbleParticle(ClientWorld clientWorld, double d, double e, double f)
 	{
-		super(clientWorld, d, e, f);
+		super(clientWorld, d, e, f, null);
 	}
 
 	@Inject(

@@ -11,6 +11,7 @@ import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
 
 public class WaterSplashEmitterParticle extends NoRenderParticle
@@ -68,14 +69,14 @@ public class WaterSplashEmitterParticle extends NoRenderParticle
 		{
 			Particle droplet = MinecraftClient.getInstance().particleManager.addParticle(ParticleTypes.FALLING_WATER,
 				x, y + 1/16f, z, 0, 0, 0);
-			if (droplet != null)
+			if (droplet instanceof BillboardParticle billboardDroplet)
 			{
 				double xVel = random.nextTriangular(0.0, spread);
 				double yVel = speed * random.nextTriangular(1.0, 0.25);
 				double zVel = random.nextTriangular(0.0, spread);
 				droplet.setPos(x + xVel / spread * width, y + 1/16f, z + zVel / spread * width);
 				droplet.setVelocity(xVel, yVel, zVel);
-				droplet.setColor(1f, 1f, 1f);
+				billboardDroplet.setColor(1f, 1f, 1f);
 				((AccessorBillboardParticle) droplet).setScale(1/8f);
 			}
 		}
@@ -88,7 +89,7 @@ public class WaterSplashEmitterParticle extends NoRenderParticle
 
 		@Nullable
 		@Override
-		public Particle createParticle(SimpleParticleType SimpleParticleType, ClientWorld clientWorld, double x, double y, double z, double g, double h, double i)
+		public Particle createParticle(SimpleParticleType SimpleParticleType, ClientWorld clientWorld, double x, double y, double z, double g, double h, double i, Random random)
 		{
 			return new WaterSplashEmitterParticle(clientWorld, x, y, z, (float) g, (float) h);
 		}

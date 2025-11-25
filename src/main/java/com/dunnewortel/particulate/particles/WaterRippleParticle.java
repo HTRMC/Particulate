@@ -11,18 +11,18 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Vector3f;
 
-public class WaterRippleParticle extends SpriteBillboardParticle
+public class WaterRippleParticle extends BillboardParticle
 {
 	protected final SpriteProvider provider;
 
 	protected WaterRippleParticle(ClientWorld world, double x, double y, double z, SpriteProvider provider)
 	{
-		super(world, x, y, z);
+		super(world, x, y, z, provider.getSprite(world.getRandom()));
 		maxAge = 7;
 		alpha = 0.2f;
 		scale = 0.25f;
 		this.provider = provider;
-		setSpriteForAge(provider);
+		updateSprite(provider);
 	}
 
 	@Override
@@ -37,17 +37,16 @@ public class WaterRippleParticle extends SpriteBillboardParticle
 		}
 		else
 		{
-			setSpriteForAge(provider);
+			updateSprite(provider);
 		}
 	}
 
 	@Override
-	public ParticleTextureSheet getType()
+	public RenderType getRenderType()
 	{
-		return ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT;
+		return RenderType.PARTICLE_ATLAS_TRANSLUCENT;
 	}
 
-	@Override
 	public void render(VertexConsumer vertexConsumer, Camera camera, float tickDelta)
 	{
 		Vec3d vec3d = camera.getPos();
@@ -87,7 +86,7 @@ public class WaterRippleParticle extends SpriteBillboardParticle
 		}
 
 		@Override
-		public Particle createParticle(SimpleParticleType parameters, ClientWorld world, double x, double y, double z, double velX, double velY, double velZ)
+		public Particle createParticle(SimpleParticleType parameters, ClientWorld world, double x, double y, double z, double velX, double velY, double velZ, net.minecraft.util.math.random.Random random)
 		{
 			return new WaterRippleParticle(world, x, y, z, provider);
 		}
