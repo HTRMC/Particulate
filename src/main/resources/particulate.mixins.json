@@ -16,6 +16,7 @@
     "AccessorEnderChestBlockEntity",
     "AccessorParticle",
     "InjectBarrelBlock",
+    "InjectBillboardParticleSubmittable",
     "InjectBlock",
     "InjectBlockLeakParticle",
     "InjectBubbleColumnUpParticle",

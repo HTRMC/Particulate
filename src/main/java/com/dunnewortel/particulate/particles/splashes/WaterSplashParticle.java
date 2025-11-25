@@ -30,6 +30,16 @@ public class WaterSplashParticle extends BillboardParticle
 	private final float unit;
 	protected boolean colored = true;
 
+	// ThreadLocal to communicate rectangular dimensions to the mixin
+	private static final ThreadLocal<RectangularDimensions> RECTANGULAR_DIMS = new ThreadLocal<>();
+
+	public record RectangularDimensions(float width, float height) {}
+
+	public static RectangularDimensions getRectangularDimensions()
+	{
+		return RECTANGULAR_DIMS.get();
+	}
+
 	WaterSplashParticle(ClientWorld clientWorld, double x, double y, double z, float width, float height, SpriteProvider provider)
 	{
 		super(clientWorld, x, y, z, provider.getSprite(clientWorld.getRandom()));
@@ -97,7 +107,7 @@ public class WaterSplashParticle extends BillboardParticle
 		int colorValue = colored ? this.color.getRGB() : Color.white.getRGB();
 
 		// Render 4 vertical sides to create 3D cylinder effect
-		// Each side needs 2 quads (front and back faces)
+		// Each side is a rectangular quad with independent width and height
 		renderSide(submittable, vector3fs, 0, 1, height, l, m, n, o, light, colorValue);
 		renderSide(submittable, vector3fs, 1, 2, height, l, m, n, o, light, colorValue);
 		renderSide(submittable, vector3fs, 2, 3, height, l, m, n, o, light, colorValue);
@@ -106,53 +116,44 @@ public class WaterSplashParticle extends BillboardParticle
 
 	private void renderSide(BillboardParticleSubmittable submittable, Vector3f[] vector3fs, int a, int b, float height, float minU, float maxU, float minV, float maxV, int light, int color)
 	{
-		// Calculate direction vector for this side
+		// Calculate the center position between the two corner vertices
+		float centerX = (vector3fs[a].x() + vector3fs[b].x()) / 2.0f;
+		float centerY = (vector3fs[a].y() + vector3fs[b].y()) / 2.0f + height / 2.0f;
+		float centerZ = (vector3fs[a].z() + vector3fs[b].z()) / 2.0f;
+
+		// Calculate width of this side (distance between corners)
 		float dx = vector3fs[b].x() - vector3fs[a].x();
 		float dz = vector3fs[b].z() - vector3fs[a].z();
 		float sideWidth = (float)Math.sqrt(dx * dx + dz * dz);
 
-		// Calculate angle - the quad should be aligned with the edge direction to form box walls
-		float angle = (float)Math.atan2(dz, dx);
+		// Calculate rotation to align quad with edge direction
+		float edgeAngle = (float)Math.atan2(dz, dx);
 
-		// Create quaternion for a vertical quad aligned with the edge
-		// Rotate around Y axis to align with the edge direction (not perpendicular)
-		org.joml.Quaternionf rotation = new org.joml.Quaternionf()
-			.rotateY(angle);  // Align with the edge direction
+		// Set rectangular dimensions in ThreadLocal so the mixin can use them
+		RECTANGULAR_DIMS.set(new RectangularDimensions(sideWidth / 2.0f, height / 2.0f));
 
-		org.joml.Quaternionf backRotation = new org.joml.Quaternionf()
-			.rotateY(angle + (float)Math.PI);  // Opposite side (180 degrees)
-
-		// Since BillboardParticleSubmittable only supports square quads (single size parameter),
-		// we need to render multiple quads to create the rectangular vertical side.
-		// Render quads with width matching sideWidth, stacked to reach full height
-		int numQuads = Math.max(1, (int)Math.ceil(height / sideWidth));
-		float quadHeight = height / numQuads;
-
-		for (int i = 0; i < numQuads; i++)
+		try
 		{
-			float yOffset = (i + 0.5f) * quadHeight;
-			float centerX = (vector3fs[a].x() + vector3fs[b].x()) / 2.0f;
-			float centerY = (vector3fs[a].y() + vector3fs[b].y()) / 2.0f + yOffset;
-			float centerZ = (vector3fs[a].z() + vector3fs[b].z()) / 2.0f;
-
-			// Calculate UV coordinates for this segment
-			float vRange = maxV - minV;
-			float segmentMinV = minV + (vRange * i / numQuads);
-			float segmentMaxV = minV + (vRange * (i + 1) / numQuads);
-
-			// Render front face
+			// Front-facing rectangular quad
+			org.joml.Quaternionf frontRotation = new org.joml.Quaternionf().rotateY(edgeAngle);
 			submittable.render(getRenderType(), centerX, centerY, centerZ,
-				rotation.x, rotation.y, rotation.z, rotation.w,
-				sideWidth / 2.0f,  // Use sideWidth for consistent quad sizing
-				minU, maxU, segmentMinV, segmentMaxV,
+				frontRotation.x, frontRotation.y, frontRotation.z, frontRotation.w,
+				1.0f, // Size doesn't matter, mixin will use custom dimensions
+				minU, maxU, minV, maxV,
 				color, light);
 
-			// Render back face
+			// Back-facing rectangular quad (180 degrees opposite)
+			org.joml.Quaternionf backRotation = new org.joml.Quaternionf().rotateY(edgeAngle + (float)Math.PI);
 			submittable.render(getRenderType(), centerX, centerY, centerZ,
 				backRotation.x, backRotation.y, backRotation.z, backRotation.w,
-				sideWidth / 2.0f,
-				minU, maxU, segmentMinV, segmentMaxV,
+				1.0f, // Size doesn't matter, mixin will use custom dimensions
+				minU, maxU, minV, maxV,
 				color, light);
+		}
+		finally
+		{
+			// Clear ThreadLocal to avoid memory leaks
+			RECTANGULAR_DIMS.remove();
 		}
 	}
 
