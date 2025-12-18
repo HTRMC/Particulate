@@ -4,3 +4,4 @@ accessible method net/minecraft/client/particle/BubblePopParticle <init> (Lnet/m
 accessible method net/minecraft/client/particle/BillboardParticleSubmittable drawFace (Lnet/minecraft/client/render/VertexConsumer;FFFFFFFFFFFFII)V
 accessible class net/minecraft/client/particle/BlockLeakParticle$ContinuousFalling
 accessible class net/minecraft/world/biome/Biome$Weather
+accessible class net/minecraft/client/particle/BillboardParticleSubmittable$Vertices

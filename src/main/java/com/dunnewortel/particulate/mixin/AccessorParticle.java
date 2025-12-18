@@ -9,4 +9,28 @@ public interface AccessorParticle
 {
 	@Accessor
 	void setStopped(boolean val);
+
+	@Accessor
+	double getX();
+
+	@Accessor
+	double getY();
+
+	@Accessor
+	double getZ();
+
+	@Accessor
+	double getLastX();
+
+	@Accessor
+	double getLastY();
+
+	@Accessor
+	double getLastZ();
+
+	@Accessor
+	int getAge();
+
+	@Accessor
+	int getMaxAge();
 }
