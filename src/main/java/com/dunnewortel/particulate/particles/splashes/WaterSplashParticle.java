@@ -41,7 +41,7 @@ public class WaterSplashParticle extends RectangularParticle {
 
 		waterColor = new Color(BiomeColors.getWaterColor(clientWorld, BlockPos.ofFloored(x, y, z)));
 		// Inset UVs to prevent texture bleeding - use larger value for particle atlas
-		unit = 0.01f;
+		unit = 0.005f;
 
 		setColor(waterColor.getRed() / 255f, waterColor.getGreen() / 255f, waterColor.getBlue() / 255f);
 	}
