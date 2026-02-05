@@ -70,7 +70,7 @@ public abstract class RectangularParticle extends Particle {
 	}
 
 	public void render(RectangularParticleSubmittable submittable, Camera camera, float tickProgress) {
-		Vec3d cameraPos = camera.getPos();
+		Vec3d cameraPos = camera.getCameraPos();
 		float x = (float) (MathHelper.lerp(tickProgress, this.lastX, this.x) - cameraPos.getX());
 		float y = (float) (MathHelper.lerp(tickProgress, this.lastY, this.y) - cameraPos.getY());
 		float z = (float) (MathHelper.lerp(tickProgress, this.lastZ, this.z) - cameraPos.getZ());

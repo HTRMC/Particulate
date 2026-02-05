@@ -91,7 +91,7 @@ public class Main implements ClientModInitializer
 			if (!Main.CONFIG.cascades()) { return; }
 
 			// Changing dimensions doesn't count as unloading chunks so I need to do this test
-			Identifier newDimension = world.getDimension().effects();
+			Identifier newDimension = world.getRegistryKey().getValue();
 			if (newDimension != currentDimension)
 			{
 				currentDimension = newDimension;

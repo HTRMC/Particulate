@@ -136,7 +136,7 @@ public class LeafParticle extends BillboardParticle
 
 	public void render(VertexConsumer vertexConsumer, Camera camera, float tickDelta)
 	{
-		Vec3d vec3d = camera.getPos();
+		Vec3d vec3d = camera.getCameraPos();
 		float f = (float)(MathHelper.lerp(tickDelta, lastX, x) - vec3d.getX());
 		float g = (float)(MathHelper.lerp(tickDelta, lastY, y) - vec3d.getY());
 		float h = (float)(MathHelper.lerp(tickDelta, lastZ, z) - vec3d.getZ());

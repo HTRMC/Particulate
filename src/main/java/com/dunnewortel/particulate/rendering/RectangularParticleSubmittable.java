@@ -91,8 +91,7 @@ public class RectangularParticleSubmittable implements OrderedRenderCommandQueue
 					RenderSystem.getModelViewMatrix(),
 					new Vector4f(1.0F, 1.0F, 1.0F, 1.0F),
 					new Vector3f(),
-					RenderSystem.getTextureMatrix(),
-					RenderSystem.getShaderLineWidth()
+					new org.joml.Matrix4f()
 				);
 				return new BillboardParticleSubmittable.Buffers(builtBuffer.getDrawParameters().indexCount(), gpuBufferSlice, layers);
 			}
@@ -114,8 +113,8 @@ public class RectangularParticleSubmittable implements OrderedRenderCommandQueue
 		for (var entry : buffers.layers().entrySet()) {
 			if (translucent == entry.getKey().translucent()) {
 				renderPass.setPipeline(entry.getKey().pipeline());
-				renderPass.bindSampler("Sampler0",
-					manager.getTexture(entry.getKey().textureAtlasLocation()).getGlTextureView());
+				renderPass.bindTexture("Sampler0",
+					manager.getTexture(entry.getKey().textureAtlasLocation()).getGlTextureView(), null);
 				renderPass.drawIndexed(entry.getValue().vertexOffset(), 0, entry.getValue().indexCount(), 1);
 			}
 		}
