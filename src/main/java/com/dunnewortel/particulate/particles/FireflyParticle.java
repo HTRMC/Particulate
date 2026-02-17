@@ -1,7 +1,6 @@
 package com.dunnewortel.particulate.particles;
 
 import com.dunnewortel.particulate.mixin.AccessorChestBlockEntity;
-import com.dunnewortel.particulate.mixin.AccessorParticle;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.particle.*;
@@ -68,7 +67,6 @@ public class FireflyParticle extends BillboardParticle
 
 		if (onGround)
 		{
-			((AccessorParticle) this).setStopped(false);
 			ageOffset += 5;
 		}
 
